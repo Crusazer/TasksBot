@@ -1,0 +1,28 @@
+services:
+  tasks_bot:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    container_name: tasks_bot
+    restart: always
+    command: python3 main.py
+    volumes:
+      - ./app:/app
+    ports:
+      - 8000:8000
+    env_file:
+      - .env
+
+
+#  tasks_bot_celery:
+#    build:
+#      context: ./app
+#      dockerfile: Dockerfile
+#    container_name: tasks_bot_celery
+#    env_file:
+#      - ./.env
+#    volumes:
+#      - ./app:/app
+#    command: celery -A general worker --loglevel=info
+#    depends_on:
+#      - tasks_bot_redis
