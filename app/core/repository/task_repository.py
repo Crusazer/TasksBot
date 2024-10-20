@@ -5,8 +5,8 @@ from typing import Iterable
 import aiosqlite
 from aiosqlite import Cursor, Row
 
-from core.schemas.task_dto import TaskDTO, UpdateTaskDTO, CreateTaskDTO
 from config import settings
+from core.schemas.task_dto import TaskDTO, UpdateTaskDTO, CreateTaskDTO
 from . import row_sql_query
 
 logger = logging.getLogger(__name__)
@@ -27,7 +27,7 @@ class TaskRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    async def get_all(self, user_id: str) -> list[TaskDTO]:
+    async def get_all(self, user_id: int) -> list[TaskDTO]:
         pass
 
     @abc.abstractmethod
@@ -35,16 +35,17 @@ class TaskRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
+    async def complete(self, task_id: int):
+        pass
+
+    @abc.abstractmethod
     async def delete(self, task_id: int):
         pass
 
 
-class SqLiteTaskRepository(TaskRepository):
+class SQLiteTaskRepository(TaskRepository):
     async def create(self, task: CreateTaskDTO) -> TaskDTO:
-        """
-        Create a mew task and return DTO the new task.
-        Make 2 execute to database for create new task and get info about this task.
-        """
+        """ Create a mew task and return DTO the new task. """
         async with aiosqlite.connect(settings.DB_NAME) as connection:
             # Create new task
             cursor: Cursor = await connection.execute(
@@ -60,42 +61,37 @@ class SqLiteTaskRepository(TaskRepository):
             return TaskDTO(*data)
 
     async def get_by_id(self, task_id: int) -> TaskDTO:
-        """
-        Get a mew task by id.
-        Make 1 execute to database for get info about this task.
-        """
+        """ Get a mew task by id. """
         async with aiosqlite.connect(settings.DB_NAME) as connection:
             cursor: Cursor = await connection.execute(row_sql_query.GET_TASK_BY_ID, (task_id,))
             data: Row = await cursor.fetchone()
             return TaskDTO(*data)
 
     async def get_all(self, user_id: str) -> list[TaskDTO]:
-        """
-        Get all user tasks by user id from database.
-        Make 1 execute to database for get info about user tasks.
-        """
+        """ Get all user tasks by user id from database.  """
         async with aiosqlite.connect(settings.DB_NAME) as connection:
             cursor: Cursor = await connection.execute(row_sql_query.GET_TASKS_BY_USER_ID, (user_id,))
             tasks_data: Iterable[Row] = await cursor.fetchall()
             return [TaskDTO(*data) for data in tasks_data]
 
+    async def complete(self, task_id: int):
+        """ Complete user task by task id. """
+        async with aiosqlite.connect(settings.DB_NAME) as connection:
+            status: int = 1  # 1 is completed, 0 is not completed
+            await connection.execute(row_sql_query.COMPLETE_TASK_BY_ID, (status, task_id,))
+            await connection.commit()
+
     async def update(self, task: UpdateTaskDTO):
-        """
-        Update a task by id.
-        Make one execute to the databaseUpdate for change description, status or deadline of task by task id.
-        """
+        """        Update a task description and deadline by id.        """
         async with aiosqlite.connect(settings.DB_NAME) as connection:
             await connection.execute(
                 row_sql_query.UPDATE_TASK_BY_ID,
-                (task.description, task.status, task.deadline, task.id)
+                (task.description, task.deadline, task.id)
             )
             await connection.commit()
 
     async def delete(self, task_id: int):
-        """
-        Delete a task by id.
-        Make one execute to database for delete a task.
-        """
+        """ Delete a task by id."""
         async with aiosqlite.connect(settings.DB_NAME) as connection:
             await connection.execute(row_sql_query.DELETE_TASK_BY_ID, (task_id,))
             await connection.commit()

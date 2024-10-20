@@ -1,8 +1,10 @@
 import dataclasses
-import os
 import logging
+import os
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
 @dataclasses.dataclass

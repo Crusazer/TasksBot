@@ -1,7 +1,5 @@
-import uuid
-
-from core.schemas.task_dto import TaskDTO, UpdateTaskDTO, CreateTaskDTO
 from core.repository.task_repository import TaskRepository
+from core.schemas.task_dto import TaskDTO, UpdateTaskDTO, CreateTaskDTO
 
 
 class TaskService:
@@ -13,18 +11,20 @@ class TaskService:
         created_task: TaskDTO = await self.task_repository.create(task)
         return created_task
 
-    async def get_all_tasks(self, user_id: str):
+    async def get_all_tasks(self, user_id: int) -> list[TaskDTO]:
         """ Returns a list of all tasks from the database.
-        :param user_id: user id from telegram.
         """
         tasks: list[TaskDTO] = await self.task_repository.get_all(user_id)
         return tasks
 
+    async def complete_task(self, task_id: int):
+        """ Updates a task status/description/deadline in the database. """
+        await self.task_repository.complete(task_id)
+
     async def update_task(self, task: UpdateTaskDTO):
         """ Updates a task status/description/deadline in the database. """
-        task: TaskDTO = await self.task_repository.update(task)
-        return task
+        await self.task_repository.update(task)
 
-    async def delete_task(self, task_id: uuid.UUID):
+    async def delete_task(self, task_id: int):
         """ Deletes a task in the database. """
         await self.task_repository.delete(task_id)

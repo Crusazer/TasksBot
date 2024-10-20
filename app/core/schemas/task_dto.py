@@ -27,6 +27,5 @@ class CreateTaskDTO:
 class UpdateTaskDTO:
     """ Used to update a task """
     id: int
-    description: str | None
-    status: bool | None
-    deadline: datetime | None
+    description: str
+    deadline: datetime

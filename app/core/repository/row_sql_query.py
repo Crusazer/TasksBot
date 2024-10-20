@@ -2,4 +2,5 @@ CREATE_TASK = " INSERT INTO task (user_id, description, status, deadline) VALUES
 GET_TASK_BY_ID = "SELECT * FROM task WHERE id = ?"
 GET_TASKS_BY_USER_ID = " SELECT * FROM task WHERE user_id = ?"
 DELETE_TASK_BY_ID = "DELETE FROM task WHERE id = ?"
-UPDATE_TASK_BY_ID = "UPDATE task SET description = ?, status = ?, deadline = ? WHERE id = ?"
+UPDATE_TASK_BY_ID = "UPDATE task SET description = ?, deadline = ? WHERE id = ?"
+COMPLETE_TASK_BY_ID = "UPDATE task SET status = ? WHERE id = ?"
