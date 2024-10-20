@@ -1,3 +1,4 @@
+aiosqlite==0.20.0
 anyio==4.6.2.post1
 certifi==2024.8.30
 exceptiongroup==1.2.2

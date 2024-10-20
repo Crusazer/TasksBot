@@ -1,32 +1,32 @@
 import dataclasses
-import uuid
 from datetime import datetime
 
 
 @dataclasses.dataclass
 class TaskDTO:
-    id: uuid.UUID
+    """ Used to transfer task data in business logic. """
+    id: int
     user_id: str
-    name: str
     description: str
     status: bool
     deadline: datetime
     created_at: datetime
+    updated_at: datetime
 
 
 @dataclasses.dataclass
 class CreateTaskDTO:
-    user_id: str
-    name: str
+    """ Used to create a new task """
+    user_id: int
     description: str
     status: bool
     deadline: datetime
-    created_at: datetime
 
 
 @dataclasses.dataclass
 class UpdateTaskDTO:
-    id: uuid.UUID
+    """ Used to update a task """
+    id: int
     description: str | None
     status: bool | None
     deadline: datetime | None
