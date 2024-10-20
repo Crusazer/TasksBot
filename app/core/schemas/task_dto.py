@@ -9,7 +9,7 @@ class TaskDTO:
     user_id: str
     description: str
     status: bool
-    deadline: datetime
+    deadline: datetime | str
     created_at: datetime
     updated_at: datetime
 

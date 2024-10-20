@@ -5,7 +5,8 @@ from telegram.ext import ContextTypes, Updater
 
 from core.repository.task_repository import SQLiteTaskRepository
 from core.services.task_service import TaskService
-from .update_task_handlers import UpdateTaskSteps
+from jobs import remove_remainder
+from .update_task_handlers import UpdateTasksSteps
 from config import settings
 
 logger = logging.getLogger(__name__)
@@ -20,7 +21,7 @@ async def update_task_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
     context.user_data['task_id'] = task_id
     await query.edit_message_text("Введите новое описание для задачи (для отмены введите /cancel):")
     logger.info("User start to update task %s", task_id)
-    return UpdateTaskSteps.DESCRIPTION
+    return UpdateTasksSteps.DESCRIPTION
 
 
 async def complete_task_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -32,6 +33,7 @@ async def complete_task_handler(update: Update, context: ContextTypes.DEFAULT_TY
     task_service = TaskService(SQLiteTaskRepository())
     await task_service.complete_task(task_id)
     await query.edit_message_text("Задача завершена!")
+    remove_remainder(context=context, task_id=task_id)
     logger.info("User complete task %s", task_id)
 
 
@@ -44,4 +46,5 @@ async def delete_task_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
     task_service = TaskService(SQLiteTaskRepository())
     await task_service.delete_task(task_id)
     await query.edit_message_text("Задача удалена успешно!")
+    remove_remainder(context=context, task_id=task_id)
     logger.info("User deleted task %s", task_id)

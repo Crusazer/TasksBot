@@ -7,8 +7,8 @@ from telegram.ext import ContextTypes
 from core.repository.task_repository import SQLiteTaskRepository
 from core.schemas.task_dto import TaskDTO
 from core.services.task_service import TaskService
-from keyboards import inline_task_keyboard
-from .create_task_handlers import CreateTaskSteps
+from keyboards.keyboards import inline_task_keyboard
+from .create_task_handlers import CreateTasksSteps
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ async def create_task(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """ Start conversation to create new task."""
     await update.message.reply_text("Введите новое описание для задачи (для отмены введите /cancel): ")
     logger.info("User %s start creating new task", update.message.from_user.id)
-    return CreateTaskSteps.DESCRIPTION
+    return CreateTasksSteps.DESCRIPTION
 
 
 async def all_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -40,5 +40,7 @@ async def all_tasks(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode=ParseMode.HTML,
             reply_markup=inline_task_keyboard(task.id)
         )
+    if not tasks:
+        await update.message.reply_text("У вас нет задач.")
 
     logger.info("User %s get all tasks", user_id)

@@ -3,7 +3,7 @@ import logging
 from telegram import Update
 from telegram.ext import ContextTypes, ConversationHandler
 
-from keyboards import main_menu_keyboard
+from keyboards.keyboards import main_menu_keyboard
 
 logger = logging.getLogger(__name__)
 

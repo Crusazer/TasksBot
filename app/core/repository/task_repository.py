@@ -31,7 +31,7 @@ class TaskRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    async def update(self, task: UpdateTaskDTO):
+    async def update(self, task: UpdateTaskDTO) -> TaskDTO:
         pass
 
     @abc.abstractmethod
@@ -81,14 +81,19 @@ class SQLiteTaskRepository(TaskRepository):
             await connection.execute(row_sql_query.COMPLETE_TASK_BY_ID, (status, task_id,))
             await connection.commit()
 
-    async def update(self, task: UpdateTaskDTO):
+    async def update(self, task: UpdateTaskDTO) -> TaskDTO:
         """        Update a task description and deadline by id.        """
         async with aiosqlite.connect(settings.DB_NAME) as connection:
-            await connection.execute(
+            cursor: Cursor = await connection.execute(
                 row_sql_query.UPDATE_TASK_BY_ID,
                 (task.description, task.deadline, task.id)
             )
             await connection.commit()
+
+            # Get task data from db
+            cursor: Cursor = await connection.execute(row_sql_query.GET_TASK_BY_ID, (task.id,))
+            data: Row = await cursor.fetchone()
+            return TaskDTO(*data)
 
     async def delete(self, task_id: int):
         """ Delete a task by id."""

@@ -9,9 +9,9 @@ from telegram.ext import (
 from fsm import change_task_handler, create_task_handler
 from handlers.callback_handlers import update_task_handler, delete_task_handler, complete_task_handler
 from handlers.command_handlers import start, cancel
-from handlers.create_task_handlers import CreateTaskSteps, create_new_task_handler, get_description_handler
+from handlers.create_task_handlers import CreateTasksSteps, handle_create_task_deadline, handle_create_task_description
 from handlers.message_handlers import all_tasks, create_task
-from handlers.update_task_handlers import UpdateTaskSteps, get_description, get_new_deadline
+from handlers.update_task_handlers import UpdateTasksSteps, handle_update_task_description, handle_update_task_deadline
 
 
 def register_all_handlers(app):
