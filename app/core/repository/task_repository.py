@@ -60,14 +60,15 @@ class SQLiteTaskRepository(TaskRepository):
             data: Row = await cursor.fetchone()
             return TaskDTO(*data)
 
-    async def get_by_id(self, task_id: int) -> TaskDTO:
+    async def get_by_id(self, task_id: int) -> TaskDTO | None:
         """ Get a mew task by id. """
         async with aiosqlite.connect(settings.DB_NAME) as connection:
             cursor: Cursor = await connection.execute(row_sql_query.GET_TASK_BY_ID, (task_id,))
             data: Row = await cursor.fetchone()
-            return TaskDTO(*data)
+            if data is not None:
+                return TaskDTO(*data)
 
-    async def get_all(self, user_id: str) -> list[TaskDTO]:
+    async def get_all(self, user_id: int) -> list[TaskDTO]:
         """ Get all user tasks by user id from database.  """
         async with aiosqlite.connect(settings.DB_NAME) as connection:
             cursor: Cursor = await connection.execute(row_sql_query.GET_TASKS_BY_USER_ID, (user_id,))
@@ -82,7 +83,7 @@ class SQLiteTaskRepository(TaskRepository):
             await connection.commit()
 
     async def update(self, task: UpdateTaskDTO) -> TaskDTO:
-        """        Update a task description and deadline by id.        """
+        """ Update a task description and deadline by id. """
         async with aiosqlite.connect(settings.DB_NAME) as connection:
             cursor: Cursor = await connection.execute(
                 row_sql_query.UPDATE_TASK_BY_ID,

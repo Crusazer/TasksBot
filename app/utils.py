@@ -2,32 +2,14 @@ import sqlite3
 from datetime import datetime, timedelta
 
 from config import settings
+from core.repository.row_sql_query import CREATE_TASK_TABLE, CREATE_AUTO_AUTOUPDATE_TIMESTAMP
 
 
 def prepare_database():
     """ Create new database if not exists and create trigger for autoupdate updated_at field. """
     with sqlite3.connect(settings.DB_NAME) as db:
-        db.execute(
-            """CREATE TABLE IF NOT EXISTS task
-            (id INTEGER PRIMARY KEY,
-            user_id INTEGER NOT NULL,
-            description TEXT NOT NULL,
-            status INTEGER NOT NULL,
-            deadline TIMESTAMP NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )"""
-        )
-        db.execute(
-            """
-            CREATE TRIGGER IF NOT EXISTS update_timestamp
-            AFTER UPDATE ON task
-            FOR EACH ROW
-            BEGIN
-            UPDATE task SET updated_at = CURRENT_TIMESTAMP WHERE id = OLD.id;
-            END;
-            """
-        )
+        db.execute(CREATE_TASK_TABLE)
+        db.execute(CREATE_AUTO_AUTOUPDATE_TIMESTAMP)
         db.commit()
 
 
