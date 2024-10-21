@@ -58,7 +58,7 @@ pip install -r requirements.txt
 5. Запустите бота
 
 ```bash
-python main.py
+python app/main.py
  ```
 
 ### Для пользователей дистрибутивов Linux
@@ -96,5 +96,5 @@ pip install -r requirements.txt
 5. Запустите бота
 
 ```bash
-python3 main.py
+python3 app/main.py
  ```
